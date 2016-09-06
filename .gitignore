@@ -1,1 +1,7 @@
 *.npy
+
+*.png
+*.pyc
+/work
+/shop
+plot-all.py
