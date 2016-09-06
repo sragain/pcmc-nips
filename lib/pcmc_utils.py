@@ -1,9 +1,7 @@
 import numpy as np
 from scipy.optimize import minimize
 
-f=lambda :np.set_printoptions(suppress=True,precision=3)
-
-def neg_L(x,C,cons):
+def neg_L(x,C):
 	"""negative log-likilhood of parameters P of a pcmc model given data in C
 	
 	Arguments:
@@ -18,12 +16,12 @@ def neg_L(x,C,cons):
 	return L
 	
 def comp_error(x,C):
-	"""computes the expected L1 norm of the probability distribition implied by
-	a PCMC model on P and the empirical distribution of a subset drawn from C
+	"""computes expected L1 distance between probability vectors from a pcmc
+	model and empirical distributions
 	
 	Arguments:
-	P- parameters for a PCMC model
-	C- dictionary containing choice sets and counts
+	x- model parameters
+	C- empirical data
 	"""
 	err=0
 	nsamp = np.sum(map(np.sum,C.values()))
@@ -34,10 +32,10 @@ def comp_error(x,C):
 	return err	
 
 def solve_ctmc(Q):
-	"""gives the probability distribution implied by a pcmc model
-	
+	"""Solves the stationary distribution of the CTMC whose rate matrix matches
+	the input on off-diagonal entries. 
 	Arguments:
-	Q- model parameters
+	Q- rate matrix
 	"""
 	A=np.copy(Q)
 	for i in range(Q.shape[0]):
@@ -52,11 +50,10 @@ def solve_ctmc(Q):
 	return np.linalg.solve(A.T,b)
 
 def comp_Q(x):
-	"""computes matrix of parameters Q from a flattened array of parameters for
-	the pcmc model
+	"""reshapes PCMC parameter vector into rate matrix
 	
-	Arguments:
-	x- n^2-n length array whose i-th n-1 entries are q_ij for j=/=i
+	input:
+	x- parameter vector of off-diagnoal entries of Q
 	"""
 	n = int(1+np.sqrt(4*len(x)+1))/2
 	Q = np.empty((n,n))
@@ -67,9 +64,11 @@ def comp_Q(x):
 
 def cons_pairs(n):
 	"""
-	returns a list containing the pairs of indices of the
-	flattened array of pcmc indices that correspond to 
-	p_ij and p_ji
+	computes pairs of indices in flattened PCMC parameters x which correspond to
+	q_ij and q_ji
+	
+	Arguments:
+	n- number of elements in PCMC model 
 	"""
 	f = lambda i: (n-1)*(i%(n-1)+1)+i/(n-1)
 	pairs = []
@@ -79,19 +78,22 @@ def cons_pairs(n):
 	
 	return pairs	
 
-def unit(n,a,b):
-	y = np.zeros(n)
-	y[a]=1;y[b]=1
-	return y
-	
+
 def infer(C,n,x=None,delta=1.0,maxiter=25):
-	"""write me"""
+	"""infers the parameters of a PCMC model using scipy.minimize to do MLE
+	
+	Arguments:
+	C- training data
+	n- number of elements in universe
+	x- starting parameters
+	delta- parameter of constraint q_ij+q_ji>=delta
+	maxiter- number of iterations allowed to optimizer 
+	"""
 	bounds=[(10**(-9),None)]*(n*(n-1))
 	if x is None:
 		x = np.random.rand(n*(n-1))+delta/2.0
 	cons=[]
 	for (a,b) in cons_pairs(n):	
 		cons.append({'type':'ineq','fun': lambda x,a=a,b=b:x[a]+x[b]-delta})
-	res = minimize(neg_L,x,args=(C,cons),bounds = bounds,constraints=tuple(cons),options={'disp':False,'maxiter':maxiter})
-
+	res = minimize(neg_L,x,args=(C),bounds = bounds,constraints=tuple(cons),options={'disp':False,'maxiter':maxiter})
 	return res.x

@@ -29,6 +29,13 @@ def ILSR(C,n):
 
 
 def comp_error(x,C):
+	"""computes the expected L1 norm of a model-inferred distribution
+	and an empricial distribution
+	
+	Arguments:
+	x- MNL parameters
+	C- empirical data
+	"""
 	err=0
 	nsamp = np.sum(map(np.sum,C.values()))
 	for S in C:

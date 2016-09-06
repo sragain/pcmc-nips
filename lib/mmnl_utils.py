@@ -7,9 +7,6 @@ def compute_probs(alpha,gamma):
 	Arguments:
 	gamma - i-th column are parameters to i-th mnl
 	alpha - alpha[i] is weight of i-th mnl
-	
-	Returns:
-	vector of choice probabiles 
 	"""
 	K = len(alpha)
 	n = gamma.shape[0]
@@ -25,7 +22,7 @@ def neg_L(x,K,C):
 	Arguments:
 	x- model parameters
 	K- number of MNLs mixed
-	C- data model evaluated against
+	C- empricial data
 	"""
 	n = len(x)/K-1
 	alpha = x[:K]
@@ -39,13 +36,13 @@ def neg_L(x,K,C):
 	return L
 
 def comp_error(x,C,n,*args,**kwargs):
-	""" computes the expected L1 norm between the empirical probabilities of a 
-	choice set and those inferred by the MMNL with specified parameters
+	"""computes expected L1 distance between probability vectors from an MMNL
+	model and empirical distributions
 	
 	Arguments:
 	x- MMNL parameters
 	K- number of MNL mixed
-	C- data for evaluation
+	C- empirical data
 	"""
 	err=0
 	nsamp = np.sum(map(np.sum,C.values())).astype(float)
@@ -80,55 +77,21 @@ def comp_error_multi_init(x,C,n,*args,**kwargs):
 		p=compute_probs(alpha,gamma[S,:])#inferred by mmnl
 		err+=(np.sum(C[S])/nsamp)*np.sum(np.abs(p-C[S]/np.sum(C[S])))
 	return err		
-	
-def infer_multiple_init(C,n,x=None,maxiter=500,epsilon=10**(-6),K=5,ninit=5):
-	"""returns the most likely of multiple trained mmnl models on training data
-	
-	
-	Arguments:
-	C- choice data
-	n- size of union of choice sets
-	x- list of ninit sets of mmnl parameters
-	maxiter- maximum number of iterations allowed to scipy.minimize
-	epsilon- used for parameter bounds to prevent numerical issues
-	K- number of mnl mixed in each mmnl
-	
-	Returns:
-	x- list of trained mmnl parameters
-	x[idx]- most likely of the trained mmnl
-	"""
-	
-	if x is None:
-		x = [np.random.rand((n+1)*K)*(1-2*epsilon)+epsilon for i in range(ninit)]
-	else:
-		x=x[0]
 		
-	K = len(x[0])/(n+1)
-	bounds = [(epsilon, None)]*(len(x[0]))
-	best=0;idx=0
-	for i in range(ninit):
-		res = minimize (fun=neg_L,x0=x[i],args=(K,C),bounds = bounds,
-						options={'disp':False,'maxiter':maxiter})
-		x[i]=res.x
-		if res.fun<best:
-			best = res.fun
-			idx=i
-	return x,x[idx]
-			
-def infer(C,n,x=None,maxiter=500,epsilon=10**(-6),K=None):
+def infer(C,n,x=None,maxiter=25,K=None):
 	"""infers the parameters of a MMNL model on input data using MLE
 	
 	Arguments:
 	C- choice data
-	n- size of union of choice sets
-	x- parameters to initialize optimization from
-	maxiter- maximum number of iterations allowed to scipy.minimize
-	epsilon- used for parameter bounds to prevent numerical issues
+	n- size of univers
+	x- initial model parameters
+	maxiter- number of iterations allowed to scipy.minimize
+	K- number of MNL mixed
 	"""
-	
+	epsilon=10**(-9) #keeps things away from 0 for numerical stability
 	if x is None:
 		if K is None:
-			K=n*(n-1)/(n+1)
+			K=n*(n-1)/(n+1) #default K has same number of params as PCMC
 		x = np.random.rand((n+1)*K)*(1-2*epsilon)+epsilon
 	K = len(x)/(n+1)
 	bounds = [(epsilon, None)]*(len(x))
