@@ -51,7 +51,6 @@ def run_sims(samples,n=6,nsim=10,nep=5,maxiter=25,split=.25,alpha=.1):
 	mnl_errors=np.empty((nsim,nep))
 	mmnl_errors=np.empty((nsim,nep))
 	pcmc_errors=np.empty((nsim,nep))
-	norm = np.empty(nsim)
 	for sim in range(nsim):	
 		print 'sim number %d' %(sim+1)
 		np.random.shuffle(samples)
@@ -84,10 +83,9 @@ def run_sims(samples,n=6,nsim=10,nep=5,maxiter=25,split=.25,alpha=.1):
 	np.save('mmnl_errors.npy',mmnl_errors)
 	np.save('pcmc_errors.npy',pcmc_errors)
 	np.save('pcmc_params.npy',lib.pcmc_utils.comp_Q(pcmc_params))
-	return pcmc_errors
 	
 if __name__=='__main__':
-	nsim=1000;nep=5;n=6;alpha=.1;samples=pickle.load(open('worklist.p','rb')) 
-	#nsim=1000;nep=5;n=8;alpha=5;samples=pickle.load(open('shoplist.p','rb')) 
-	print np.mean(run_sims(samples=samples,n=n,nsim=nsim,nep=nep,alpha=alpha)[:,-1])
+	nsim=100;nep=15;n=6;alpha=.1;samples=pickle.load(open('worklist.p','rb'));split=.25
+	#nsim=100;nep=15;n=8;alpha=5;samples=pickle.load(open('shoplist.p','rb'));split=.25
+	run_sims(samples=samples,n=n,nsim=nsim,nep=nep,split=split,alpha=alpha)
 			

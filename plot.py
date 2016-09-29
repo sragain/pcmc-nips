@@ -2,21 +2,24 @@ import numpy as np
 from matplotlib import pyplot as plt
 from lib.pcmc_utils import solve_ctmc
 
-def plot(split):
+def plot(split,workFlag=True):
 	"""generates heatmap and error plots from locally saved data
 	to be run after infer.py
 	
+	Double commented lines 
 	Aguments:
 	split- proportion of data used for test set
 	"""
 	#set up for pyplot
-	f,(ax1,ax2,ax3) = plt.subplots(1,3,figsize=(18,5))
+	if workFlag:
+		f,(ax1,ax2,ax3) = plt.subplots(1,3,figsize=(18,5))
+	else:
+		f,(ax1,ax2,ax3) = plt.subplots(1,3,figsize=(18,6))
 	plt.rcParams.update({'font.size': 12})
 	plt.rc('text', usetex=True)	
 	plt.rc('font', family='serif')
 	params = {'text.latex.preamble' : [r'\usepackage{amsmath}']}
 	plt.rcParams.update(params)
-	f.tight_layout(w_pad=0.4,h_pad=0)
 	
 	#load errors
 	pcmc = np.load('pcmc_errors.npy')
@@ -28,12 +31,11 @@ def plot(split):
 	percent = 100*(1-split)/nep*np.array(range(1,nep+1))
 	
 	#make plots
-	ax1.plot(percent,np.mean(mnl,axis=0),marker='x',color='r',label='MNL')
-	ax1.plot(percent,np.mean(mmnl,axis=0),marker='x',color='g',label='MMNL')
-	ax1.plot(percent,np.mean(pcmc,axis=0),marker='x',color='b',label='PCMC')
+	ax1.plot(percent,np.mean(mnl,axis=0),marker='o',color='r',label='MNL')
+	ax1.plot(percent,np.mean(mmnl,axis=0),marker='o',color='g',label='MMNL')
+	ax1.plot(percent,np.mean(pcmc,axis=0),marker='o',color='b',label='PCMC')
 	
 	#make it pretty
-	ax2.set_title('SFwork')
 	ax1.legend(loc=4)
 	ax1.set_xlabel(r'Percent of data used for training',labelpad=.1)	
 	ax1.set_xticks(percent)
@@ -73,25 +75,42 @@ def plot(split):
 
 	
 	#plot
-	#commented lines are for plotting SFshop results
 	cbar1=ax2.matshow(P,cmap=plt.cm.coolwarm)
-	ax2.set_xticklabels(['','1','2','3','4','5','6'])
-	ax2.set_yticklabels(['','1','2','3','4','5','6'])
-	#ax2.set_xticklabels(['','1','2','3','4','5','6','7','8'])
-	#ax2.set_yticklabels(['','1','2','3','4','5','6','7','8'])	
+	if workFlag:
+		ax2.set_xticklabels(['','1','2','3','4','5','6'])#
+		ax2.set_yticklabels(['','1','2','3','4','5','6'])#
+	else:
+		ax2.set_xticklabels(['','1','2','3','4','5','6','7','8'])
+		ax2.set_yticklabels(['','1','2','3','4','5','6','7','8'])	
 	ax2.tick_params(axis=u'both', which=u'both',length=0)
+	ax2.xaxis.tick_bottom()
+	
 	cbar2=ax3.matshow(C,cmap=plt.cm.PuBuGn)
-	ax3.set_xticklabels(['','1','2','3','4','5','6'])
-	ax3.set_yticklabels(['','1','2','3','4','5','6'])	
-	#ax2.set_xticklabels(['','1','2','3','4','5','6','7','8'])
-	#ax2.set_yticklabels(['','1','2','3','4','5','6','7','8'])		
+	if workFlag:
+		ax3.set_xticklabels(['','1','2','3','4','5','6'])#
+		ax3.set_yticklabels(['','1','2','3','4','5','6'])#	
+	else:
+		ax3.set_xticklabels(['','1','2','3','4','5','6','7','8'])
+		ax3.set_yticklabels(['','1','2','3','4','5','6','7','8'])		
 	ax3.tick_params(axis=u'both', which=u'both',length=0)	
+	ax3.xaxis.tick_bottom()
+	
 	cbar1 = plt.colorbar(cbar1,ax=ax2)
 	cbar2 = plt.colorbar(cbar2,ax=ax3)
 	cbar1.set_label('$p_{ij}/(p_{ij}+p_{ji})$')
 	cbar2.set_label('$p_{ij}+p_{ji}$')
-	plt.show()
+	if workFlag:
+		ax2.set_title('SFwork')	
+	else:
+		ax2.set_title('SFshop')
+	f.tight_layout(w_pad=0.2,h_pad=0)
+	
+	if workFlag:
+		plt.savefig('workplot.png')
+	else:
+		plt.savefig('shopplot.png')
 
 if __name__ == '__main__':
 	split=.25;#update this if you change it in infer.py
-	plot(split=split)
+	workFlag=True;#chang to False to plot SFshop data
+	plot(split=split,workFlag=workFlag)
