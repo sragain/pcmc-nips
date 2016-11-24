@@ -36,12 +36,12 @@ def plot(split,workFlag=True):
 	ax1.plot(percent,np.mean(pcmc,axis=0),marker='o',color='b',label='PCMC')
 	
 	#make it pretty
-	ax1.legend(loc=4)
+	ax1.legend(loc=3)
 	ax1.set_xlabel(r'Percent of data used for training',labelpad=.1)	
 	ax1.set_xticks(percent)
-	ax1.set_xlim((0,100*(1-split)))
+	ax1.set_xlim((0,80))
 	ax1.set_ylabel(r'Error')
-	ax1.set_ylim(ymin=0)#,ymax=.2)
+	ax1.set_ylim(ymin=0)
 
 	
 	#Now we plot the heatmap
@@ -112,5 +112,5 @@ def plot(split,workFlag=True):
 
 if __name__ == '__main__':
 	split=.25;#update this if you change it in infer.py
-	workFlag=True;#chang to False to plot SFshop data
+	workFlag=True;#change to False to plot SFshop data
 	plot(split=split,workFlag=workFlag)
