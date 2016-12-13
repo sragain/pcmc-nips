@@ -1,4 +1,4 @@
-# pcmc-nips -- Pairwise Choice Markov Chains, NIPS 2016
+# Pairwise Choice Markov Chains (PCMC)
 
 This repository hosts data and code released in conjunction with the following paper:
 
