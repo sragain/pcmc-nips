@@ -97,8 +97,8 @@ def plot(split,workFlag=True):
 	
 	cbar1 = plt.colorbar(cbar1,ax=ax2)
 	cbar2 = plt.colorbar(cbar2,ax=ax3)
-	cbar1.set_label('$p_{ij}/(p_{ij}+p_{ji})$')
-	cbar2.set_label('$p_{ij}+p_{ji}$')
+	cbar1.set_label('$q_{ij}/(q_{ij}+q_{ji})$')
+	cbar2.set_label('$q_{ij}+q_{ji}$')
 	if workFlag:
 		ax2.set_title('SFwork')	
 	else:

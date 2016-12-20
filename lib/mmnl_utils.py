@@ -95,5 +95,5 @@ def infer(C,n,x=None,maxiter=25,K=None):
 		x = np.random.rand((n+1)*K)*(1-2*epsilon)+epsilon
 	K = len(x)/(n+1)
 	bounds = [(epsilon, None)]*(len(x))
-	res = minimize(neg_L,x,args=(K,C),bounds = bounds,options={'disp':False,'maxiter':maxiter})
+	res = minimize(neg_L,x,args=(K,C),method='L-BFGS-B',bounds = bounds,options={'disp':False,'maxiter':maxiter})
 	return res.x
