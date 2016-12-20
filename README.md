@@ -6,7 +6,7 @@ This repository hosts data and code released in conjunction with the following p
 
 The paper applies the PCMC model to two datasets: SFwork and SFshop. To reproduce the plot for SFwork seen in the paper, simply run infer.py and then plot.py. To average over more or fewer shuffles of the data, or to see more or fewer splits of the training data, or change the dataset, simply edit the top-level script environment at the bottom of infer.py. As written, the plotter plot.py must be updated if there are changes in train/test split.
 
-The code can be run on the SFshop data by commenting in/out 2 lines in the script environment of infer.py, and changing a boolean in the script environment of plot.py.
+The code can be run on the SFshop data by commenting in/out 2 lines in the script environment of infer.py, and changing a boolean in the script environment of plot.py. The code is written for python 2.7 and depends on scipy. For scipy, versuib 0.17.0 or later should work, but an earlier version (0.13.0b1) is known to be incompatible because it lacks L-BFGS-B. 
 
 ### Detailed breakdown of files:
 
