@@ -95,5 +95,5 @@ def infer(C,n,x=None,delta=1.0,maxiter=25):
 	cons=[]
 	for (a,b) in cons_pairs(n):	
 		cons.append({'type':'ineq','fun': lambda x,a=a,b=b:x[a]+x[b]-delta})
-	res = minimize(neg_L,x,args=(C),method = 'SLSQP',bounds = bounds,constraints=tuple(cons),options={'disp':False,'maxiter':maxiter})
+	res = minimize(neg_L,x,args=C,method = 'SLSQP',bounds = bounds,constraints=tuple(cons),options={'disp':False,'maxiter':maxiter})
 	return res.x
