@@ -20,7 +20,7 @@ def split_samples(samples,nep,split=.25,alpha=.1):
 	testsamples = samples[splitidx:]
 	for (S,choice) in testsamples:
 		if S not in Ctest:
-			Ctest[S]=np.ones(len(S))*alpha
+			Ctest[S]=np.zeros(len(S))
 		Ctest[S][choice]+=1
 	
 	
